@@ -1,0 +1,41 @@
+# This is a configuration file
+
+# The 'settings' section contains the values of the parameters used in the simulation.
+[settings]
+
+stable_temperature_solution_1 = 280
+unstable_temperature_solution = 285
+stable_temperature_solution_2 = 290
+
+surface_earth_thermal_capacity = 0.31e9
+relaxation_time = 13
+emission_model = linear
+forcing_amplitude = 0.0005
+forcing_period = 1e5
+
+num_steps = 1000000
+num_simulations = 50
+time_step = 1
+
+variance_start = 0.01
+variance_end = 0.9
+num_variances = 50
+
+seed_value = 42
+
+# The 'data_paths' section contains the paths for saving the data.
+[data_paths]
+
+pseudo_potential = ./data/pseudo_potential.npy
+peaks_strengths_in_PSD = ./data/peaks_strengths_in_PSD.npy
+peaks_heights_in_PSD = ./data/peak_heights_values_in_PSD.npy
+SNR = ./data/SNR.npy
+results = ./data/results.npy
+
+#The 'image_paths' section contains the paths for saving the plots.
+[image_paths]
+
+peak_strengths_plot = ./images/peak_strenghts_plot.png
+peak_heights_plot = ./images/peak_heights_plot.png
+SNR_plot = ./images/SNR_plot.png
+pseudo_potential_plot = ./images/additional_images/pseudo_potential.png
