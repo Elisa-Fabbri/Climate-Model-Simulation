@@ -106,11 +106,10 @@ print('----------------------------------------------------')
 barrier_height_left = potential_values[1, 0] - potential_values[0, 0]
 barrier_height_right = potential_values[1, 0] - potential_values[2, 0]
 
-#barrier_height = 0.5*(barrier_height_left + barrier_height_right)
+barrier_height = 0.5*(barrier_height_left + barrier_height_right)
+barrier_height_error = 0.5*(barrier_height_right - barrier_height_left)
 
-barrier_height = barrier_height_right
-
-print('The barrier height is approximatively ', barrier_height , 'Joules')
+print('The barrier height is approximatively ', barrier_height , ' +/- ', barrier_height_error)
 
 #----Computing the second derivative of the potential in the steady states-----
 
@@ -146,8 +145,17 @@ print(' {:^15.2f} | {:^25.4f} | {:^10.4f} '.format(stable_temperature_solution_2
                                                     potential_second_derivative[2, 1]))
 
 potential_second_derivative_in_maxima = potential_second_derivative[1, 0]
-#potential_second_derivative_in_minima = (potential_second_derivative[0, 0] + potential_second_derivative[2, 0])*0.5
-potential_second_derivative_in_minima = potential_second_derivative[2, 0]
+potential_second_derivative_in_minima_left = potential_second_derivative[0, 0]
+potential_second_derivative_in_minima_right = potential_second_derivative[2, 0]
+
+potential_second_derivative_in_minima = 0.5*(potential_second_derivative_in_minima_left + 
+                                             potential_second_derivative_in_minima_right)
+
+potential_second_derivative_in_minima_error = 0.5*(potential_second_derivative_in_minima_right -
+                                                   potential_second_derivative_in_minima_left)
+
+print('The value of the second derivative of the potential in minima is ', potential_second_derivative_in_minima,
+      ' +/- ', potential_second_derivative_in_minima_error)
 
 print('--------------------------------------------------------------')
 
@@ -168,11 +176,24 @@ D_SR_apprx = sr.time_scale_matching_condition(barrier_height=barrier_height,
                                               potential_second_derivative_in_maxima=potential_second_derivative_in_maxima,
                                               potential_second_derivative_in_minima=potential_second_derivative_in_minima)
 
+log_argument = (4*np.pi)/( forcing_period*np.sqrt((-potential_second_derivative_in_maxima)*
+                                                  potential_second_derivative_in_minima))
+partial_derivative_D_SR_wrt_barrier_height = - (1 / np.log(log_argument))
+
+partial_derivative_D_SR_wrt_potential_second_derivative_in_mimina = - ( barrier_height /
+                                                                       (2*potential_second_derivative_in_minima*\
+                                                                        np.power(np.log(log_argument), 2)))
+
+D_SR_apprx_error = np.sqrt((partial_derivative_D_SR_wrt_barrier_height**2)*(barrier_height_error**2) +
+                            (partial_derivative_D_SR_wrt_potential_second_derivative_in_mimina**2)*\
+                            (potential_second_derivative_in_minima_error**2))
+
 print('The value of the noise variance that maximizes the the response amplitude should be around ', 
-      D_SR)
-print('The approximated value for the noise variance that maximizes the the response amplitude is ', D_SR_apprx)
+      D_SR, '+/-', D_SR_apprx_error)
+print('The approximated value for the noise variance that maximizes the the response amplitude is ', D_SR_apprx,
+      ' +/- ', D_SR_apprx_error)
 print('The value of the noise variance that maximizes the signal-to-noise ratio should be around ', 
-      barrier_height/2)
+      barrier_height/2, '+/-', barrier_height_error/2)
 
 #------------Generation of the data for the pseudo potential plot----------------
 
