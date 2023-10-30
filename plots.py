@@ -233,10 +233,15 @@ def plot_pseudo_potential():
     data = check_path_and_load_data(data_path = pseudo_potential_plot_path,
                                     contained_data = 'pseudo-potential')  
     temperature = data[:, 0]
-    potential = data[:, 1]
+    potential_min_forcing = data[:, 1]
+    potential_no_forcing = data[:, 2]
+    potential_max_forcing = data[:, 3]
 
     f = plt.figure(figsize=(15, 10))
-    plt.plot(temperature, potential)
+    plt.plot(temperature, potential_no_forcing, color='red', label=r'Periodic forcing value = $1$')
+    plt.plot(temperature, potential_max_forcing, color='blue', label=r'Periodic forcing value = $1 + 10^{-4}$')
+    plt.plot(temperature, potential_min_forcing, color='green', label=r'Periodic forcing value = $1 - 10^{-4}$')
+    plt.legend(loc='best')
     plt.xlabel(r'Temperature $\left[ K \right]$')
     plt.ylabel(r'Pseudo-potential')
     plt.title('Pseudo-potential as a function of the temperature', fontsize=15, fontweight='bold')
