@@ -202,20 +202,25 @@ print('Generating data for the pseudo potential plot...')
 temperature = np.linspace(stable_temperature_solution_1 - 5,
                           stable_temperature_solution_2 + 5, 1000)
 
-pseudo_potential_data = np.zeros((len(temperature), 3))
+pseudo_potential_data = np.zeros((len(temperature), 4))
+pseudo_potential_data[:, 0] = temperature
+mu_values = [1-forcing_amplitude, 1, 1+forcing_amplitude]
 
-for index, temp in enumerate(temperature):
-    potential, error = sr.pseudo_potential(upper_temperature_limit = temp,
-                                           lower_temperature_limit = singular_point + 0.00001, 
-                                           surface_thermal_capacity = C_years,
-                                           relaxation_time = relaxation_time,
-                                           stable_temperature_solution_1 = stable_temperature_solution_1,
-                                           unstable_temperature_solution = unstable_temperature_solution,
-                                           stable_temperature_solution_2 = stable_temperature_solution_2,
-                                           emission_model = emission_model)
-    pseudo_potential_data[index, 0] = temp
-    pseudo_potential_data[index, 1] = potential
-    pseudo_potential_data[index, 2] = error
+for mu_index, mu in enumerate(mu_values):
+    potential_values = np.zeros(len(temperature))
+    error_values = np.zeros(len(temperature))
+    for index, temp in enumerate(temperature):
+        potential, error = sr.pseudo_potential(upper_temperature_limit = temp,
+                                               lower_temperature_limit = 275, 
+                                               surface_thermal_capacity = C_years,
+                                               relaxation_time = relaxation_time,
+                                               stable_temperature_solution_1 = stable_temperature_solution_1,
+                                               unstable_temperature_solution = unstable_temperature_solution,
+                                               stable_temperature_solution_2 = stable_temperature_solution_2,
+                                               emission_model = emission_model,
+                                               periodic_forcing_value = mu)
+        potential_values[index] = potential
+    pseudo_potential_data[:, mu_index + 1] = potential_values
 
 np.save(pseudo_potential_destination, pseudo_potential_data)
 
